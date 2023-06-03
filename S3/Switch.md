@@ -614,3 +614,45 @@ BHCA（maximum number of Busy Hour Call Attempts，最大忙时试呼次数）
 ### 过负荷控制的概念
 
 ![image-20230603183323986](https://s2.loli.net/2023/06/03/YTShHw8yROp4ruN.png)
+
+# 分组交换
+
+## *路由器的交换结构
+
+高端路由器的CLOS结构
+
+不知道是个什么东西，没见过，也许是指M40交换机？
+
+## *ATM网络
+
+![image-20230603185609171](https://s2.loli.net/2023/06/03/CF6Jscdm3ZaygrD.png)
+
+![image-20230603185618955](https://s2.loli.net/2023/06/03/LAlwyBU9VdFzjmO.png)
+
+## MPLS的基本组成和原理
+
+- 特点：面向连接（VPC/VCC）、多协议、标签交换
+
+- MPLS 在多种第二层协议上进行标记交换，将第二层和第三层有机结合。
+
+- 核心思想：**边缘路由，核心交换**：边缘路由保持与现有协议兼容，增强核心网络交换速度。
+
+概念：
+
+- LSP：Label Switched Path 标记交换路径，类似虚电路。
+- FEC：Forward Equivalence Class 前转等价类，灵活按照多种方式划分，相同 FEC 的包具有相同 Label，走相同 LSP。
+- LIB：Label Information Base 标记信息库，保存转发 Labeled 分组所需要的信息。
+- Ingress LER：Ingress Label Edge Router 入口边缘路由器，为每个 FEC 生成 Label，映射到 LSP 下一跳的标记。对入口 IP 分组进行分类，确定 FEC。
+- LER：根据 FEC 查询 LIB 得到下一跳 Label，将 Label 插入 IP 包头，从相应端口发送。
+- LSR：Label Switch Router，维护 LIB、完成标记置换。
+- Egress LER：去掉 Label 还原成普通 IP 包继续转发。
+
+主要特点：
+
+- 标记置换：将 2 层的交换速度带到 3 层
+- 控制平面与转发平面分离：便于采用新的路由协议和交换技术
+- 通过标记堆栈实现多层次的转发：提高可扩展性
+
+对比：
+
+![image-20230603195831182](https://s2.loli.net/2023/06/03/8H61oVNDE3b5tnY.png)
