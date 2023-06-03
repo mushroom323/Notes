@@ -366,7 +366,7 @@ $$
 - 交换的控制过程由 CM 硬件实现，速度快。
 - 交换时延小且稳定，延迟时间不均匀。
 - 严格无阻塞，并且可避免出线冲突。
-- **易于实现同发和广播。**
+- **可以实现同发和广播。**
 - 速率固定。
 
 ![image-20230603173656930](https://s2.loli.net/2023/06/03/EJSBN9fIVglzWQ6.png)
@@ -639,12 +639,12 @@ BHCA（maximum number of Busy Hour Call Attempts，最大忙时试呼次数）
 
 概念：
 
-- LSP：Label Switched Path 标记交换路径，类似虚电路。
-- FEC：Forward Equivalence Class 前转等价类，灵活按照多种方式划分，相同 FEC 的包具有相同 Label，走相同 LSP。
+- **LSP**：Label Switched Path 标记交换路径，类似虚电路。
+- **FEC**：Forward Equivalence Class 前转等价类，灵活按照多种方式划分，相同 FEC 的包具有相同 Label，走相同 LSP。
 - LIB：Label Information Base 标记信息库，保存转发 Labeled 分组所需要的信息。
 - Ingress LER：Ingress Label Edge Router 入口边缘路由器，为每个 FEC 生成 Label，映射到 LSP 下一跳的标记。对入口 IP 分组进行分类，确定 FEC。
-- LER：根据 FEC 查询 LIB 得到下一跳 Label，将 Label 插入 IP 包头，从相应端口发送。
-- LSR：Label Switch Router，维护 LIB、完成标记置换。
+- **LER**：根据 FEC 查询 LIB 得到下一跳 Label，将 Label 插入 IP 包头，从相应端口发送。
+- **LSR**：Label Switch Router，维护 LIB、完成标记置换。
 - Egress LER：去掉 Label 还原成普通 IP 包继续转发。
 
 主要特点：
@@ -656,3 +656,74 @@ BHCA（maximum number of Busy Hour Call Attempts，最大忙时试呼次数）
 对比：
 
 ![image-20230603195831182](https://s2.loli.net/2023/06/03/8H61oVNDE3b5tnY.png)
+
+## MPLS交换原理
+
+标签操作：
+
+- Push：标签入栈，进入子路由域内传输。
+- Pop：标签出栈，回到父路由域传输。
+- Replace：置换标签，在同一路由域内传输。
+
+LDP 标签分配过程：
+
+- 发现相邻的 LDP 对等体：使用 UDP 广播，发现相邻 LSR
+- 建立 LDP 会话：相邻 LSR 建立 TCP 连接，建立 LDP 会话
+- 建立 LSP：下游 LSR 分配标记并沿着 LDP 会话通知上游 LSR
+
+![image-20230601183414365](https://s2.loli.net/2023/06/03/MA9Eto57mpJxVRP.png)
+
+![image-20230601183422144](https://s2.loli.net/2023/06/03/jCSGaxz5fc8ODMh.png)
+
+![image-20230601195040050](https://s2.loli.net/2023/06/03/Dmk5w7rlneEbicJ.png)
+
+# 信令系统
+
+## NO.7信令系统
+
+- MTP：公共的消息传递部分（重点）
+  - MTP1——物理层
+  - MTP2——数据链路层
+  - MTP3——网络层一部分
+- SCCP：信令连接控制部分——网络层一部分
+- UP：用户部分——传输层、会话层、表示层、应用层
+  - ISUP：综合业务数字网部分
+  - TUP：电话用户部分（重点）
+  - DUP：数据用户部分
+  - TCAP：事务处理能力部分
+    - INAP：智能网应用部分
+    - OMAP：操作维护应用部分
+    - MAP：移动通信应用部分
+
+MTP 各级功能：
+
+| OSI 对应     | MTP 部分             | 功能                                                         |
+| ------------ | -------------------- | ------------------------------------------------------------ |
+| 物理层       | MTP1：信令数据链路级 | 规定信令链路电气特性和接入方法。速率 64Kbps。                |
+| 数据链路层   | MTP2：信令链路功能级 | 将第一级中透明传输的比特流划分为不同长度的信令单元，有差错检测和重发校正。 |
+| 网络层的部分 | MTP3：信令网功能级   | 保证信令单元在网络中的可靠传输。                             |
+
+![image-20230601214904922](https://s2.loli.net/2023/06/03/MzNiCwrTW3VkIHe.png)
+
+TUP 功能：规定电话呼叫的建立和释放的信令流程，以及实现这些流程的消息和消息编码。并能支持部分用户补充业务。提供电话呼叫的控制信令，完成电话呼叫续接和控制。
+
+- 处理 SIF 字段中的 CIC、H0H1、信令信息。
+- 呼叫信令：
+
+| 消息类型 | 含义                                   |
+| -------- | -------------------------------------- |
+| IAM      | 初始地址消息                           |
+| ACM      | 地址全消息，表示被叫空闲，呼叫建立成功 |
+| ANC      | 被叫应答、计费消息                     |
+| CLF      | 前向释放                               |
+| CBK      | 后向释放                               |
+| RLG      | 正常呼叫结束时电路释放监护消息         |
+|          |                                        |
+| SLB      | 市话忙                                 |
+| STB      | 长话忙                                 |
+| CGC      | 电路群拥塞                             |
+| SEC      | 交换机拥塞                             |
+
+<img src="https://s2.loli.net/2023/06/03/K8nrIwOAQ5zLoxh.png" alt="image-20210618213327736" style="zoom:50%;" />
+
+![image-20230603205320447](https://s2.loli.net/2023/06/03/ruTZ83QDWRG7jgf.png)
