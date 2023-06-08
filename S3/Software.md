@@ -1019,3 +1019,5 @@ SSD 示例：
 - 白盒测试不能应用穷举法，黑盒测试可以应用。（×）
 
   > ![image-20230606231935851](https://raw.githubusercontent.com/mushroom323/notes-imgs/main/image-20230606231935851.png)
+
+- ![image-20230607202939750](C:\Users\74347\AppData\Roaming\Typora\typora-user-images\image-20230607202939750.png)
